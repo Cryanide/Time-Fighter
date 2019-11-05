@@ -29,14 +29,10 @@ public class HealthManager : MonoBehaviour
         }
 
         // to prevent health/stamina from going over the limit
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-        if (currentStamina > maxStamina)
-        {
-            currentStamina = maxStamina;
-        }
+        if (currentHealth > maxHealth) currentHealth = maxHealth;
+
+
+        if (currentStamina > maxStamina) currentStamina = maxStamina;
 
         // regeneration code will go here when/if implemented
         if (canHealthRegen)
@@ -54,7 +50,7 @@ public class HealthManager : MonoBehaviour
     {
         if (isPlayer && col.tag == "Enemy")
         {
-            currentHealth -= 10;
+            //currentHealth -= 10;
         }
 
         // damage dealt to an enemy once we implement attacks 

@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(EnemyAttackScript))]
 public class EnemyMovement : MonoBehaviour
 {
+    // SerializeField allows us to see private variables in the inspector
+    // DisableMovement does what it says, AI wont move to player if this is true
+    [SerializeField] bool DisableMovement;
     Transform player;
     NavMeshAgent agent;
-    bool PlayerIsNear;
+    public bool PlayerIsNear;
 
     Animator anim;
+
+    bool attackState;
 
     // Start is called before the first frame update
     void Start()
@@ -23,14 +29,50 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!PlayerIsNear)
+        if (!DisableMovement)
         {
-            agent.destination = player.position;
-            anim.SetBool("MovingToPlayer", true);
-        }
-        else
-        {
-            anim.SetBool("MovingToPlayer", false);
+            //  Debug.Log(Vector3.Distance(transform.position, player.position));
+            //  Debug.LogWarning(PlayerIsNear);
+            if (!PlayerIsNear)
+            {
+                // Moves AI to player position
+                agent.destination = player.position;
+                anim.SetBool("MovingToPlayer", true);
+            }
+            else
+            {
+                // Using the vector3.distance, we control if the AI should run, walk, or stop
+                if (Vector3.Distance(transform.position, player.position) <= 5 && Vector3.Distance(transform.position, player.position) > 1.5)
+                {
+                    //if this returns true have the AI walk
+                    agent.destination = player.position;
+                    anim.SetBool("MovingToPlayer", true);
+                    anim.SetBool("Walk", true);
+                }
+                else if(Vector3.Distance(transform.position, player.position) <= 1.5)
+                {
+                    // if this returns true he stay posted up
+                    anim.SetBool("Walk", false);
+                    anim.SetBool("MovingToPlayer", false);
+                }
+                else if(Vector3.Distance(transform.position, player.position) > 5)
+                {
+                    //  if this returns true, he runs
+                    agent.destination = player.position;
+                    anim.SetBool("MovingToPlayer", true);
+                    anim.SetBool("Walk", false);
+
+                }
+                
+                attackState = true;
+            }
+
+
+            if (attackState)
+            {
+                // this flag is just for changing animations
+                anim.SetBool("attackMode", true);
+            }
         }
 
         /*
@@ -46,11 +88,10 @@ public class EnemyMovement : MonoBehaviour
 
     void OnTriggerEnter(Collider col)
     {
-        if (col.tag == "Player")
-        {
-            PlayerIsNear = true;
+        //  we could use vector3.distance rather than triggers, but triggers have a soft spot in my heart
+        //  (but actually ill remove them)
+        if (col.tag == "Player") PlayerIsNear = true;
 
-        }
     }
     void OnTriggerExit(Collider col)
     {

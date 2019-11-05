@@ -6,7 +6,7 @@ using Chronos;
 
 public class UI_TimeControl : MonoBehaviour
 {
-    public Text TimeScale;
+    //public Text TimeScale;
 
     // Start is called before the first frame update
     void Start()
